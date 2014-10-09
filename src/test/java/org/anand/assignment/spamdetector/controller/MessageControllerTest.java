@@ -35,6 +35,8 @@ public class MessageControllerTest {
     public static final String MESSAGE = "/service/message";
     public static final String DUMMY_MESSAGE = "/service/dummyMessage";
     private static final String FLAG_USER = "/service/flag/";
+    private static final String FLAGGED_PROFILES = "/service/flagged";
+    private static final String BLOCKED_PROFILES = "/service/blocked";
 
     private final static String SAMPLE_MESSAGE = "{\"sourceProfileId\": \"35603735\","
             + "\"targetProfileId\": \"36872220\",\"sourceClientId\": \"undefined\",\"messageId\": "
@@ -80,9 +82,22 @@ public class MessageControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(FLAG_USER + 35603735)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
-        // todo
-
     }
+
+    @Test
+    public void shouldGetFlaggedProfiles() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(FLAGGED_PROFILES)
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldGetBlockedProfiles() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(BLOCKED_PROFILES)
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+    }
+    
     @Configuration
     @EnableWebMvc
     public static class TestConfiguration {
