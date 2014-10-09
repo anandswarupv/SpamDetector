@@ -278,7 +278,7 @@
 				<version>2.5.2</version>
 				<configuration>
 					<check>
-						<totalLineRate>70</totalLineRate>
+						<totalLineRate>50</totalLineRate>
 					</check>
 				</configuration>
 				<executions>

@@ -1,7 +1,7 @@
 package org.anand.assignment.spamdetector.cache;
 
 import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEviction;
-import org.anand.assignment.spamdetector.queues.Queues;
+import org.anand.assignment.spamdetector.queues.DataOnRedis;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class MessageCountMapWithTimeBasedEvictionTest {
     private static final Integer count = 1;
 
     @Mock
-    Queues queues;
+    DataOnRedis dataOnRedis;
 
     @InjectMocks
     MessageCountMapWithTimeBasedEviction messageCountMap = new MessageCountMapWithTimeBasedEviction();
@@ -33,7 +33,7 @@ public class MessageCountMapWithTimeBasedEvictionTest {
         for (int i = 0; i < 51; i++) {
             messageCountMap.put(sourceProfileId, count);
         }
-        Mockito.verify(queues).addToFlaggedQueue(sourceProfileId, count);
+        Mockito.verify(dataOnRedis).addToFlaggedQueue(sourceProfileId, count);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class MessageCountMapWithTimeBasedEvictionTest {
         }
         waitForKeyTimeout();
         messageCountMap.put(sourceProfileId, count);
-        Mockito.verifyZeroInteractions(queues);
+        Mockito.verifyZeroInteractions(dataOnRedis);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class MessageCountMapWithTimeBasedEvictionTest {
         for (int i = 0; i < 101; i++) {
             messageCountMap.put(sourceProfileId, count);
         }
-        Mockito.verify(queues, Mockito.times(2)).addToFlaggedQueue(sourceProfileId, count);
+        Mockito.verify(dataOnRedis, Mockito.times(2)).addToFlaggedQueue(sourceProfileId, count);
     }
 
     @Test

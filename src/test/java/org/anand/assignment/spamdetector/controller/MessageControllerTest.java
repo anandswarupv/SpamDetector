@@ -5,9 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.nio.charset.Charset;
 
 import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEviction;
-import org.anand.assignment.spamdetector.controller.MessageController;
 import org.anand.assignment.spamdetector.model.Message;
-import org.anand.assignment.spamdetector.queues.Queues;
+import org.anand.assignment.spamdetector.queues.DataOnRedis;
 import org.anand.assignment.spamdetector.service.MessageService;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,9 +98,9 @@ public class MessageControllerTest {
         }
 
         @Bean
-        public Queues queues() {
-            Queues queues = new Queues();
-            return queues;
+        public DataOnRedis dataOnRedis() {
+            DataOnRedis dataOnRedis = new DataOnRedis();
+            return dataOnRedis;
         }
 
     }

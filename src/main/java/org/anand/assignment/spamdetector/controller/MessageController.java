@@ -1,6 +1,7 @@
 package org.anand.assignment.spamdetector.controller;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.service.MessageService;
@@ -26,6 +27,8 @@ public class MessageController {
     private static final String MESSAGE = "/service/message";
     private static final String DUMMY_MESSAGE = "/service/dummyMessage";
     private static final String FLAG_USER = "/service/flag/";
+    private static final String FLAGGED_PROFILES = "/service/flagged";
+    private static final String BLOCKED_PROFILES = "/service/blocked";
 
     @Autowired
     MessageService messageService;
@@ -58,6 +61,30 @@ public class MessageController {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Get Flagged Profiles
+     * 
+     * @return
+     */
+    @RequestMapping(value = FLAGGED_PROFILES, method = RequestMethod.GET)
+    public @ResponseBody List<String> flaggedProfiles() {
+        LOGGER.debug("Getting flagged Profiles");
+        List<String> flaggedProfiles = messageService.getFlaggedProfiles();
+        return flaggedProfiles;
+    }
+
+    /**
+     * Get Flagged Profiles
+     * 
+     * @return
+     */
+    @RequestMapping(value = BLOCKED_PROFILES, method = RequestMethod.GET)
+    public @ResponseBody List<String> blockedProfiles() {
+        LOGGER.debug("Getting Blocked Profiles");
+        List<String> blockedProfiles = messageService.getBlockedProfiles();
+        return blockedProfiles;
     }
 
     /**

@@ -3,7 +3,7 @@ package org.anand.assignment.spamdetector.cache;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.anand.assignment.spamdetector.queues.Queues;
+import org.anand.assignment.spamdetector.queues.DataOnRedis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class MessageCountMapWithTimeBasedEviction {
     private int TIMEOUT = 10;
 
     @Autowired
-    Queues queues;
+    DataOnRedis dataOnRedis;
 
     @SuppressWarnings("deprecation")
     ConcurrentMap<String, Integer> messageCountMap = new MapMaker().expiration(TIMEOUT, TimeUnit.SECONDS).makeMap();
@@ -50,7 +50,7 @@ public class MessageCountMapWithTimeBasedEviction {
         if (oldValue != null) {
             if (oldValue >= 50) {
                 messageCountMap.put(key, value);
-                queues.addToFlaggedQueue(key, value);
+                dataOnRedis.addToFlaggedQueue(key, value);
             } else {
                 oldValue++;
                 messageCountMap.put(key, oldValue);
