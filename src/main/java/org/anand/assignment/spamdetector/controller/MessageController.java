@@ -88,7 +88,7 @@ public class MessageController {
     }
 
     /**
-     * Used to FLAG a user for sending SPAM
+     * Flag a user for sending SPAM
      * 
      * @param message
      * @return
@@ -96,7 +96,7 @@ public class MessageController {
     @RequestMapping(value = FLAG_USER + "{sourceProfileId}", method = RequestMethod.POST)
     public @ResponseBody boolean flagSourceProfile(@PathVariable("sourceProfileId") String sourceProfileId) {
         LOGGER.debug("Flag User : " + sourceProfileId);
-        // TODO
+        messageService.flagProfile(sourceProfileId);
         return true;
     }
 

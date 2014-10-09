@@ -74,6 +74,15 @@ public class MessageControllerTest {
                 .andExpect(status().isOk());
 
     }
+
+    @Test
+    public void shouldFlagAUserAndAddToQueue() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(FLAG_USER + 35603735)
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+        // todo
+
+    }
     @Configuration
     @EnableWebMvc
     public static class TestConfiguration {

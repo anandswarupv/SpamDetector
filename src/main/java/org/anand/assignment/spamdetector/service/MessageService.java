@@ -76,6 +76,21 @@ public class MessageService {
      * 
      * @return
      */
+    public boolean flagProfile(String sourceProfileId) {
+        try {
+            dataOnRedis.addToFlaggedQueue(sourceProfileId, 1);
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Gives a {@link Set} of all the flagged profiles
+     * 
+     * @return
+     */
     public Set<String> getFlaggedProfiles() {
         Set<String> flaggedProfiles = dataOnRedis.getFlaggedProfiles();
         return flaggedProfiles;

@@ -5,7 +5,6 @@ import java.util.Set;
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.queues.MessageBuilder;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
@@ -13,10 +12,10 @@ import com.jayway.restassured.http.ContentType;
 
 public class MessageControllerIT {
 
-    @Before
-    public void setup() {
-
-    }
+    private static final String MESSAGE = "/service/message";
+    private static final String FLAG_USER = "/service/flag/";
+    private static final String FLAGGED_PROFILES = "/service/flagged";
+    private static final String BLOCKED_PROFILES = "/service/blocked";
 
     @Test
     public void shouldAddMessageToQueue() throws Exception {
@@ -29,7 +28,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post("/service/message");
+                .post(MESSAGE);
     }
 
     @Test
@@ -43,7 +42,7 @@ public class MessageControllerIT {
                     .statusCode(200)
                     .log().ifError()
                     .when()
-                    .post("/service/message");
+                    .post(MESSAGE);
         }
         @SuppressWarnings("unchecked")
         Set<String> sourceProfiles = RestAssured.given()
@@ -52,7 +51,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get("/service/flagged")
+                .get(FLAGGED_PROFILES)
                 .as(Set.class);
         Assert.assertTrue(sourceProfiles.contains(message.getSourceProfileId()));
     }
@@ -68,7 +67,7 @@ public class MessageControllerIT {
                     .statusCode(200)
                     .log().ifError()
                     .when()
-                    .post("/service/message");
+                    .post(MESSAGE);
         }
         @SuppressWarnings("unchecked")
         Set<String> sourceProfiles = RestAssured.given()
@@ -77,14 +76,55 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get("/service/blocked")
+                .get(BLOCKED_PROFILES)
                 .as(Set.class);
         Assert.assertTrue(sourceProfiles.contains(message.getSourceProfileId()));
     }
 
     @Test
+    public void shouldAddProfileToBlockedQueueForGettingFlaggedThreeTimes() throws Exception {
+        String sourceProfileId = "112233";
+        Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
+        for (int i = 0; i < 51; i++) {
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(message)
+                    .expect()
+                    .statusCode(200)
+                    .log().ifError()
+                    .when()
+                    .post(MESSAGE);
+        }
+        // Flag Twice
+        flagProfile(sourceProfileId);
+        flagProfile(sourceProfileId);
+
+        @SuppressWarnings("unchecked")
+        Set<String> blockedProfiles = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .expect()
+                .statusCode(200)
+                .log().ifError()
+                .when()
+                .get(BLOCKED_PROFILES)
+                .as(Set.class);
+        Assert.assertTrue(blockedProfiles.contains(sourceProfileId));
+    }
+
+    private void flagProfile(String sourceProfileId) {
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .expect()
+                .statusCode(200)
+                .log().ifError()
+                .when()
+                .post(FLAG_USER + sourceProfileId);
+    }
+
+    @Test
     public void shouldNotAddProfileToBlockedQueueJustFlagTwice() throws Exception {
-        Message message = MessageBuilder.aMessage().withSourceProfileId("998877").build();
+        String sourceProfileId = "998877";
+        Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
         for (int i = 0; i < 101; i++) {
             RestAssured.given()
                     .contentType(ContentType.JSON)
@@ -93,7 +133,7 @@ public class MessageControllerIT {
                     .statusCode(200)
                     .log().ifError()
                     .when()
-                    .post("/service/message");
+                    .post(MESSAGE);
         }
         @SuppressWarnings("unchecked")
         Set<String> blockedProfiles = RestAssured.given()
@@ -102,9 +142,9 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get("/service/blocked")
+                .get(BLOCKED_PROFILES)
                 .as(Set.class);
-        Assert.assertFalse(blockedProfiles.contains("998877"));
+        Assert.assertFalse(blockedProfiles.contains(sourceProfileId));
         @SuppressWarnings("unchecked")
         Set<String> flaggedProfiles = RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -112,9 +152,9 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get("/service/flagged")
+                .get(FLAGGED_PROFILES)
                 .as(Set.class);
-        Assert.assertTrue(flaggedProfiles.contains("998877"));
+        Assert.assertTrue(flaggedProfiles.contains(sourceProfileId));
     }
 
 }
