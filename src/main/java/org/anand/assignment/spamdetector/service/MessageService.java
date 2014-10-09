@@ -1,6 +1,6 @@
 package org.anand.assignment.spamdetector.service;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -72,22 +72,22 @@ public class MessageService {
     }
 
     /**
-     * Gives a {@link List} of all the flagged profiles
+     * Gives a {@link Set} of all the flagged profiles
      * 
      * @return
      */
-    public List<String> getFlaggedProfiles() {
-        List<String> flaggedProfiles = dataOnRedis.getFlaggedProfiles();
+    public Set<String> getFlaggedProfiles() {
+        Set<String> flaggedProfiles = dataOnRedis.getFlaggedProfiles();
         return flaggedProfiles;
     }
 
     /**
-     * Gives a {@link List} of all the blocked profiles
+     * Gives a {@link Set} of all the blocked profiles
      * 
      * @return
      */
-    public List<String> getBlockedProfiles() {
-        List<String> blockedProfiles = dataOnRedis.getBlockedProfiles();
+    public Set<String> getBlockedProfiles() {
+        Set<String> blockedProfiles = dataOnRedis.getBlockedProfiles();
         return blockedProfiles;
     }
 

@@ -20,7 +20,6 @@ public class Worker implements Runnable {
     }
 
     public void run() {
-        System.out.println("Worker Started");
         while (true) {
             Message message;
             try {
@@ -28,7 +27,6 @@ public class Worker implements Runnable {
                 messageCountMapWithTimeBasedEviction.put(message.getSourceProfileId(), 1);
             } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage());
-                e.printStackTrace();
             }
         }
     }

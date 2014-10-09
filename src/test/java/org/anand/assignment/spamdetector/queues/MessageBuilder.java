@@ -29,7 +29,7 @@ public class MessageBuilder {
         return new MessageBuilder();
     }
 
-    public MessageBuilder aMessageWithSourceProfileId(String sourceProfileId) {
+    public MessageBuilder withSourceProfileId(String sourceProfileId) {
         this.sourceProfileId = sourceProfileId;
         return this;
     }

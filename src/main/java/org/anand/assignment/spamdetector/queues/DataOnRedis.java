@@ -1,6 +1,6 @@
 package org.anand.assignment.spamdetector.queues;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -42,7 +42,6 @@ public class DataOnRedis {
      */
     public void addToFlaggedQueue(String sourceProfileId, Integer count) throws InterruptedException {
         Integer oldValue = flaggedProfiles.put(sourceProfileId, count);
-        System.out.println("Added to Flagged Queue : " + sourceProfileId);
         if (oldValue != null) {
             if (oldValue >= 2) {
                 blockedProfiles.put(sourceProfileId, count);
@@ -66,14 +65,14 @@ public class DataOnRedis {
         blockedProfiles.put(sourceProfileId, count);
     }
 
-    public List<String> getFlaggedProfiles() {
-        // TODO Auto-generated method stub
-        return null;
+    public Set<String> getFlaggedProfiles() {
+        Set<String> sourceProfiles = flaggedProfiles.keySet();
+        return sourceProfiles;
     }
 
-    public List<String> getBlockedProfiles() {
-        // TODO Auto-generated method stub
-        return null;
+    public Set<String> getBlockedProfiles() {
+        Set<String> sourceProfiles = blockedProfiles.keySet();
+        return sourceProfiles;
     }
 
 }

@@ -1,7 +1,7 @@
 package org.anand.assignment.spamdetector.controller;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Set;
 
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.service.MessageService;
@@ -69,9 +69,9 @@ public class MessageController {
      * @return
      */
     @RequestMapping(value = FLAGGED_PROFILES, method = RequestMethod.GET)
-    public @ResponseBody List<String> flaggedProfiles() {
+    public @ResponseBody Set<String> flaggedProfiles() {
         LOGGER.debug("Getting flagged Profiles");
-        List<String> flaggedProfiles = messageService.getFlaggedProfiles();
+        Set<String> flaggedProfiles = messageService.getFlaggedProfiles();
         return flaggedProfiles;
     }
 
@@ -81,9 +81,9 @@ public class MessageController {
      * @return
      */
     @RequestMapping(value = BLOCKED_PROFILES, method = RequestMethod.GET)
-    public @ResponseBody List<String> blockedProfiles() {
+    public @ResponseBody Set<String> blockedProfiles() {
         LOGGER.debug("Getting Blocked Profiles");
-        List<String> blockedProfiles = messageService.getBlockedProfiles();
+        Set<String> blockedProfiles = messageService.getBlockedProfiles();
         return blockedProfiles;
     }
 
