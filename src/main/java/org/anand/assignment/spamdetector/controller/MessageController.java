@@ -54,13 +54,7 @@ public class MessageController {
     @RequestMapping(value = MESSAGE, method = RequestMethod.POST)
     public @ResponseBody boolean message(@RequestBody Message message) {
         LOGGER.debug("Received message from : " + message.getSourceProfileId());
-        try {
-            messageService.addMessageToSpamDetectionQueue(message);
-        } catch (InterruptedException e) {
-            LOGGER.error(e.getMessage());
-            return false;
-        }
-        return true;
+        return messageService.addMessageToSpamDetectionQueue(message);
     }
 
     /**

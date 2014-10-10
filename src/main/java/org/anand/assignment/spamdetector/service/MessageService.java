@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Provides all the services
+ * Provides all the services and interacts with the data on Redis and RabbitMQ
  * 
  * @author anand
  *
@@ -27,13 +27,22 @@ public class MessageService {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
     private ExecutorService executorService;
-    private LinkedBlockingQueue<Message> rabbitMQWorkQueue = new LinkedBlockingQueue<Message>();
+    private LinkedBlockingQueue<Message> rabbitMQWorkQueue;
     
-    @Autowired
     MessageCountMapWithTimeBasedEviction messageCountMapWithTimeBasedEviction;
-
-    @Autowired
     DataOnRedis dataOnRedis;
+
+    /**
+     * @param messageCountMapWithTimeBasedEviction
+     * @param dataOnRedis
+     */
+    @Autowired
+    public MessageService(MessageCountMapWithTimeBasedEviction messageCountMapWithTimeBasedEviction,
+            DataOnRedis dataOnRedis) {
+        this.messageCountMapWithTimeBasedEviction = messageCountMapWithTimeBasedEviction;
+        this.dataOnRedis = dataOnRedis;
+        rabbitMQWorkQueue = new LinkedBlockingQueue<Message>();
+    }
 
     /**
      * Instantiate and start the workers with the Queue
@@ -65,9 +74,14 @@ public class MessageService {
      * @return
      * @throws InterruptedException
      */
-    public boolean addMessageToSpamDetectionQueue(Message message) throws InterruptedException {
-        LOGGER.info("Message added to Delivery Queue");
-        rabbitMQWorkQueue.put(message);
+    public boolean addMessageToSpamDetectionQueue(Message message) {
+        LOGGER.debug("Message added to Delivery Queue");
+        try {
+            rabbitMQWorkQueue.put(message);
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
+            return false;
+        }
         return true;
     }
 

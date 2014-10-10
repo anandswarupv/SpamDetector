@@ -1,8 +1,12 @@
 package org.anand.assignment.spamdetector.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEviction;
 import org.anand.assignment.spamdetector.model.Message;
@@ -48,9 +52,12 @@ public class MessageControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    private static MessageService messageService = Mockito.mock(MessageService.class);
+
     @Before
     public void setUp() throws Exception {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        Mockito.reset(messageService);
     }
 
     @Test
@@ -62,11 +69,12 @@ public class MessageControllerTest {
 
     @Test
     public void shouldPOSTAMessage() throws Exception {
+        Mockito.when(messageService.addMessageToSpamDetectionQueue(Mockito.any(Message.class))).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders.post(MESSAGE)
                         .contentType(APPLICATION_JSON_UTF8)
                 .content(SAMPLE_MESSAGE))
-                .andExpect(status().isOk());
-
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
     }
 
     @Test
@@ -79,23 +87,31 @@ public class MessageControllerTest {
 
     @Test
     public void shouldFlagAUserAndAddToQueue() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(FLAG_USER + 35603735)
+        String sourceProfileId = "35603735";
+        mockMvc.perform(MockMvcRequestBuilders.post(FLAG_USER + sourceProfileId)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
+        Mockito.verify(messageService).flagProfile(sourceProfileId);
     }
 
     @Test
     public void shouldGetFlaggedProfiles() throws Exception {
+        Set<String> flaggedProfiles = new HashSet<String>(Arrays.asList("1", "2", "3"));
+        Mockito.when(messageService.getFlaggedProfiles()).thenReturn(flaggedProfiles);
         mockMvc.perform(MockMvcRequestBuilders.get(FLAGGED_PROFILES)
                 .contentType(APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("[\"3\",\"2\",\"1\"]"));
     }
 
     @Test
     public void shouldGetBlockedProfiles() throws Exception {
+        Set<String> blockedProfiles = new HashSet<String>(Arrays.asList("1", "2", "3"));
+        Mockito.when(messageService.getBlockedProfiles()).thenReturn(blockedProfiles);
         mockMvc.perform(MockMvcRequestBuilders.get(BLOCKED_PROFILES)
                 .contentType(APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("[\"3\",\"2\",\"1\"]"));
     }
     
     @Configuration
@@ -110,8 +126,6 @@ public class MessageControllerTest {
 
         @Bean
         public MessageService messageService() throws InterruptedException {
-            MessageService messageService = Mockito.mock(MessageService.class);
-            Mockito.when(messageService.addMessageToSpamDetectionQueue(Mockito.any(Message.class))).thenReturn(true);
             return messageService;
         }
 
