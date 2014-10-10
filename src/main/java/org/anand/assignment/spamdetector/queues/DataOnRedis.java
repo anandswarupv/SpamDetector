@@ -6,6 +6,15 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Wrapper for DataStructure that could be stored on shared in-memory storage
+ * like Redis.
+ * 
+ * All workers should have access to this data
+ * 
+ * @author anand
+ *
+ */
 @Component
 public class DataOnRedis {
     

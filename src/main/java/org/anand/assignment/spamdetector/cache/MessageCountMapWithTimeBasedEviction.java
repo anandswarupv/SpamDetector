@@ -9,6 +9,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.MapMaker;
 
+/**
+ * Concurrent Map with the following features 1. Time Based eviction. Using
+ * expireAfterWrite 2. If the same key is added again, the value gets
+ * incremented
+ * 
+ * @author anand
+ *
+ */
 @Component
 public class MessageCountMapWithTimeBasedEviction {
 

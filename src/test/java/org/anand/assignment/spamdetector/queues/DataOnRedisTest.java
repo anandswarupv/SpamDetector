@@ -1,9 +1,9 @@
 package org.anand.assignment.spamdetector.queues;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.anand.assignment.spamdetector.queues.DataOnRedis;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,6 +19,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class DataOnRedisTest {
 
     private static final String sourceProfileId = "35603735";
+    private static final String anotherSourceProfileId = "35603736";
     private static final Integer count = 1;
     private ConcurrentMap<String, Integer> flaggedProfiles;
     private ConcurrentMap<String, Integer> blockedProfiles;
@@ -49,6 +50,22 @@ public class DataOnRedisTest {
         dataOnRedis.addToFlaggedQueue(sourceProfileId, count);
         dataOnRedis.addToFlaggedQueue(sourceProfileId, count);
         Assert.assertThat(flaggedProfiles.get(sourceProfileId), Matchers.equalTo(2));
+    }
+
+    @Test
+    public void shouldGetAllFlaggedProfiles() throws Exception {
+        dataOnRedis.addToFlaggedQueue(sourceProfileId, count);
+        dataOnRedis.addToFlaggedQueue(anotherSourceProfileId, count);
+        Set<String> flaggedProfiles = dataOnRedis.getFlaggedProfiles();
+        Assert.assertThat(flaggedProfiles, Matchers.contains(sourceProfileId, anotherSourceProfileId));
+    }
+
+    @Test
+    public void shouldGetAllBlockedProfiles() throws Exception {
+        dataOnRedis.addToBlockingQueue(sourceProfileId, count);
+        dataOnRedis.addToBlockingQueue(anotherSourceProfileId, count);
+        Set<String> blockedProfiles = dataOnRedis.getBlockedProfiles();
+        Assert.assertThat(blockedProfiles, Matchers.contains(sourceProfileId, anotherSourceProfileId));
     }
 
     @Test

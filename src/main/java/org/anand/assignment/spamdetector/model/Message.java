@@ -2,6 +2,12 @@ package org.anand.assignment.spamdetector.model;
 
 import java.sql.Timestamp;
 
+/**
+ * Represents the message
+ * 
+ * @author anand
+ *
+ */
 public class Message {
 
     private String sourceProfileId;
