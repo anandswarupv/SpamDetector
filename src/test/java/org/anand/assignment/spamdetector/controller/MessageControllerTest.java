@@ -12,6 +12,7 @@ import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEvict
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.queues.DataOnRedis;
 import org.anand.assignment.spamdetector.service.MessageService;
+import org.anand.assignment.spamdetector.utils.SystemProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,11 +37,6 @@ public class MessageControllerTest {
 
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-    public static final String MESSAGE = "/service/message";
-    public static final String DUMMY_MESSAGE = "/service/dummyMessage";
-    private static final String FLAG_USER = "/service/flag/";
-    private static final String FLAGGED_PROFILES = "/service/flagged";
-    private static final String BLOCKED_PROFILES = "/service/blocked";
 
     private final static String SAMPLE_MESSAGE = "{\"sourceProfileId\": \"35603735\","
             + "\"targetProfileId\": \"36872220\",\"sourceClientId\": \"undefined\",\"messageId\": "
@@ -62,7 +58,7 @@ public class MessageControllerTest {
 
     @Test
     public void shouldGetAMessage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(DUMMY_MESSAGE)
+        mockMvc.perform(MockMvcRequestBuilders.get(SystemProperties.DUMMY_MESSAGE)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
     }
@@ -70,7 +66,7 @@ public class MessageControllerTest {
     @Test
     public void shouldPOSTAMessage() throws Exception {
         Mockito.when(messageService.addMessageToSpamDetectionQueue(Mockito.any(Message.class))).thenReturn(true);
-        mockMvc.perform(MockMvcRequestBuilders.post(MESSAGE)
+        mockMvc.perform(MockMvcRequestBuilders.post(SystemProperties.MESSAGE)
                         .contentType(APPLICATION_JSON_UTF8)
                 .content(SAMPLE_MESSAGE))
                 .andExpect(status().isOk())
@@ -79,7 +75,7 @@ public class MessageControllerTest {
 
     @Test
     public void shouldFlagAUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(FLAG_USER + 35603735)
+        mockMvc.perform(MockMvcRequestBuilders.post(SystemProperties.FLAG_USER + 35603735)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
 
@@ -88,7 +84,7 @@ public class MessageControllerTest {
     @Test
     public void shouldFlagAUserAndAddToQueue() throws Exception {
         String sourceProfileId = "35603735";
-        mockMvc.perform(MockMvcRequestBuilders.post(FLAG_USER + sourceProfileId)
+        mockMvc.perform(MockMvcRequestBuilders.post(SystemProperties.FLAG_USER + sourceProfileId)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         Mockito.verify(messageService).flagProfile(sourceProfileId);
@@ -98,7 +94,7 @@ public class MessageControllerTest {
     public void shouldGetFlaggedProfiles() throws Exception {
         Set<String> flaggedProfiles = new HashSet<String>(Arrays.asList("1", "2", "3"));
         Mockito.when(messageService.getFlaggedProfiles()).thenReturn(flaggedProfiles);
-        mockMvc.perform(MockMvcRequestBuilders.get(FLAGGED_PROFILES)
+        mockMvc.perform(MockMvcRequestBuilders.get(SystemProperties.FLAGGED_PROFILES)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[\"3\",\"2\",\"1\"]"));
@@ -108,7 +104,7 @@ public class MessageControllerTest {
     public void shouldGetBlockedProfiles() throws Exception {
         Set<String> blockedProfiles = new HashSet<String>(Arrays.asList("1", "2", "3"));
         Mockito.when(messageService.getBlockedProfiles()).thenReturn(blockedProfiles);
-        mockMvc.perform(MockMvcRequestBuilders.get(BLOCKED_PROFILES)
+        mockMvc.perform(MockMvcRequestBuilders.get(SystemProperties.BLOCKED_PROFILES)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[\"3\",\"2\",\"1\"]"));

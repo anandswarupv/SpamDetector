@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.utils.MessageBuilder;
+import org.anand.assignment.spamdetector.utils.SystemProperties;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,11 +12,6 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 
 public class MessageControllerIT {
-
-    private static final String MESSAGE = "/service/message";
-    private static final String FLAG_USER = "/service/flag/";
-    private static final String FLAGGED_PROFILES = "/service/flagged";
-    private static final String BLOCKED_PROFILES = "/service/blocked";
 
     @Test
     public void shouldAddMessageToQueue() throws Exception {
@@ -28,7 +24,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post(MESSAGE);
+                .post(SystemProperties.MESSAGE);
     }
 
     @Test
@@ -70,6 +66,18 @@ public class MessageControllerIT {
     }
 
     @Test
+    public void shouldNotFlagTheProfile() throws Exception {
+        String sourceProfileId = "223344";
+        Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
+        int numberOfMessages = 49;
+        postMessages(message, numberOfMessages);
+        Thread.sleep(11000);
+        postMessages(message, numberOfMessages);
+        Set<String> sourceProfiles = getFlaggedProfiles();
+        Assert.assertFalse(sourceProfiles.contains(message.getSourceProfileId()));
+    }
+
+    @Test
     public void shouldAddProfileToBlockedQueueForGettingFlaggedThreeTimes() throws Exception {
         String sourceProfileId = "112233";
         int numberOfMessages = 51;
@@ -105,7 +113,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post(FLAG_USER + sourceProfileId);
+                .post(SystemProperties.FLAG_USER + sourceProfileId);
     }
 
     private void postMessage(Message message) {
@@ -116,7 +124,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post(MESSAGE);
+                .post(SystemProperties.MESSAGE);
     }
 
     @SuppressWarnings("unchecked")
@@ -127,7 +135,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get(FLAGGED_PROFILES)
+                .get(SystemProperties.FLAGGED_PROFILES)
                 .as(Set.class);
     }
 
@@ -139,7 +147,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get(BLOCKED_PROFILES)
+                .get(SystemProperties.BLOCKED_PROFILES)
                 .as(Set.class);
     }
 
