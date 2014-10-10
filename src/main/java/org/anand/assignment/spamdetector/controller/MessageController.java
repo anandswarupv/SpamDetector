@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.service.MessageService;
+import org.anand.assignment.spamdetector.utils.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MessageController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageController.class);
-    private static final String MESSAGE = "/service/message";
-    private static final String DUMMY_MESSAGE = "/service/dummyMessage";
-    private static final String FLAG_USER = "/service/flag/";
-    private static final String FLAGGED_PROFILES = "/service/flagged";
-    private static final String BLOCKED_PROFILES = "/service/blocked";
 
     @Autowired
     MessageService messageService;
@@ -38,7 +34,7 @@ public class MessageController {
      * 
      * @return
      */
-    @RequestMapping(value = DUMMY_MESSAGE, method = RequestMethod.GET)
+    @RequestMapping(value = SystemProperties.DUMMY_MESSAGE, method = RequestMethod.GET)
     public @ResponseBody Message dummyMessage() {
         LOGGER.debug("Received message : ");
         Message message = getADummyMessage();
@@ -51,7 +47,7 @@ public class MessageController {
      * @param message
      * @return
      */
-    @RequestMapping(value = MESSAGE, method = RequestMethod.POST)
+    @RequestMapping(value = SystemProperties.MESSAGE, method = RequestMethod.POST)
     public @ResponseBody boolean message(@RequestBody Message message) {
         LOGGER.debug("Received message from : " + message.getSourceProfileId());
         return messageService.addMessageToSpamDetectionQueue(message);
@@ -62,7 +58,7 @@ public class MessageController {
      * 
      * @return
      */
-    @RequestMapping(value = FLAGGED_PROFILES, method = RequestMethod.GET)
+    @RequestMapping(value = SystemProperties.FLAGGED_PROFILES, method = RequestMethod.GET)
     public @ResponseBody Set<String> flaggedProfiles() {
         LOGGER.debug("Getting flagged Profiles");
         Set<String> flaggedProfiles = messageService.getFlaggedProfiles();
@@ -74,7 +70,7 @@ public class MessageController {
      * 
      * @return
      */
-    @RequestMapping(value = BLOCKED_PROFILES, method = RequestMethod.GET)
+    @RequestMapping(value = SystemProperties.BLOCKED_PROFILES, method = RequestMethod.GET)
     public @ResponseBody Set<String> blockedProfiles() {
         LOGGER.debug("Getting Blocked Profiles");
         Set<String> blockedProfiles = messageService.getBlockedProfiles();
@@ -87,7 +83,7 @@ public class MessageController {
      * @param message
      * @return
      */
-    @RequestMapping(value = FLAG_USER + "{sourceProfileId}", method = RequestMethod.POST)
+    @RequestMapping(value = SystemProperties.FLAG_USER + "{sourceProfileId}", method = RequestMethod.POST)
     public @ResponseBody boolean flagSourceProfile(@PathVariable("sourceProfileId") String sourceProfileId) {
         LOGGER.debug("Flag User : " + sourceProfileId);
         messageService.flagProfile(sourceProfileId);

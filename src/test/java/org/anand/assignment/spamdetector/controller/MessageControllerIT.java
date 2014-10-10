@@ -3,7 +3,7 @@ package org.anand.assignment.spamdetector.controller;
 import java.util.Set;
 
 import org.anand.assignment.spamdetector.model.Message;
-import org.anand.assignment.spamdetector.queues.MessageBuilder;
+import org.anand.assignment.spamdetector.utils.MessageBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,30 +34,47 @@ public class MessageControllerIT {
     @Test
     public void shouldAddProfileToFlaggedQueueForPostingMoreThan50MessagesIn10Secs() throws Exception {
         Message message = MessageBuilder.aMessage().build();
-        for (int i = 0; i < 51; i++) {
-            postMessage(message);
-        }
+        int numbersOfMessages = 51;
+        postMessages(message, numbersOfMessages);
         Set<String> sourceProfiles = getFlaggedProfiles();
         Assert.assertTrue(sourceProfiles.contains(message.getSourceProfileId()));
     }
 
     @Test
+    public void shouldNotAddProfileToFlaggedQueue() throws Exception {
+        String sourceProfileId = "9999";
+        int numberOfMessages = 50;
+        Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
+        postMessages(message, numberOfMessages);
+        Set<String> sourceProfiles = getFlaggedProfiles();
+        Assert.assertFalse(sourceProfiles.contains(message.getSourceProfileId()));
+    }
+
+    @Test
     public void shouldAddProfileToBlockedQueueForSendingMoreThan50MessagesIn10SecThreeTimes() throws Exception {
         Message message = MessageBuilder.aMessage().build();
-        for (int i = 0; i < 151; i++) {
-            postMessage(message);
-        }
+        int numberOfMessages = 151;
+        postMessages(message, numberOfMessages);
         Set<String> sourceProfiles = getBlockedProfiles();
         Assert.assertTrue(sourceProfiles.contains(message.getSourceProfileId()));
     }
 
     @Test
+    public void shouldNotAddProfileToBlockedQueue() throws Exception {
+        String sourceProfileId = "88888";
+        Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
+        int numberOfMessages = 101;
+        postMessages(message, numberOfMessages);
+        Set<String> sourceProfiles = getBlockedProfiles();
+        Assert.assertFalse(sourceProfiles.contains(message.getSourceProfileId()));
+    }
+
+    @Test
     public void shouldAddProfileToBlockedQueueForGettingFlaggedThreeTimes() throws Exception {
         String sourceProfileId = "112233";
+        int numberOfMessages = 51;
         Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
-        for (int i = 0; i < 51; i++) {
-            postMessage(message);
-        }
+        postMessages(message, numberOfMessages);
         // Flag Twice
         flagProfile(sourceProfileId);
         flagProfile(sourceProfileId);
@@ -71,10 +88,9 @@ public class MessageControllerIT {
     @Test
     public void shouldNotAddProfileToBlockedQueueJustFlagTwice() throws Exception {
         String sourceProfileId = "998877";
+        int numberOfMessages = 101;
         Message message = MessageBuilder.aMessage().withSourceProfileId(sourceProfileId).build();
-        for (int i = 0; i < 101; i++) {
-            postMessage(message);
-        }
+        postMessages(message, numberOfMessages);
         Set<String> blockedProfiles = getBlockedProfiles();
         Set<String> flaggedProfiles = getFlaggedProfiles();
 
@@ -127,4 +143,10 @@ public class MessageControllerIT {
                 .as(Set.class);
     }
 
+    private void postMessages(Message message, int numberOfMessages) {
+        for (int i = 0; i < numberOfMessages; i++) {
+            postMessage(message);
+        }
+    }
 }
+

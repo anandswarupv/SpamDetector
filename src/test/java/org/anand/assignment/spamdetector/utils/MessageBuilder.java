@@ -1,4 +1,4 @@
-package org.anand.assignment.spamdetector.queues;
+package org.anand.assignment.spamdetector.utils;
 
 import java.sql.Timestamp;
 

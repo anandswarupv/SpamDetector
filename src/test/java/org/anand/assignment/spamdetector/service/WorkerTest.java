@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEviction;
 import org.anand.assignment.spamdetector.model.Message;
-import org.anand.assignment.spamdetector.queues.MessageBuilder;
+import org.anand.assignment.spamdetector.utils.MessageBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

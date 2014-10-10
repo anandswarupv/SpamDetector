@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.anand.assignment.spamdetector.queues.DataOnRedis;
+import org.anand.assignment.spamdetector.utils.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +21,13 @@ import com.google.common.collect.MapMaker;
 @Component
 public class MessageCountMapWithTimeBasedEviction {
 
-    private int TIMEOUT = 10;
-
     @Autowired
     DataOnRedis dataOnRedis;
 
     @SuppressWarnings("deprecation")
-    ConcurrentMap<String, Integer> messageCountMap = new MapMaker().expiration(TIMEOUT, TimeUnit.SECONDS).makeMap();
+    ConcurrentMap<String, Integer> messageCountMap = new MapMaker().expiration(
+            SystemProperties.DEFAULT_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
+            .makeMap();
 
     /**
      * Returns the value to which the specified key is mapped, or {@code null}
@@ -56,7 +57,7 @@ public class MessageCountMapWithTimeBasedEviction {
     public void put(String key, Integer value) throws InterruptedException {
         Integer oldValue = messageCountMap.put(key, value);
         if (oldValue != null) {
-            if (oldValue >= 50) {
+            if (oldValue >= SystemProperties.MAX_MESSAGES_ALLOWED_IN_TIMEOUT_WINDOW) {
                 messageCountMap.put(key, value);
                 dataOnRedis.addToFlaggedQueue(key, value);
             } else {

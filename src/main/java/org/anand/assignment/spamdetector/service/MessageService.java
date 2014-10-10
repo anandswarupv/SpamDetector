@@ -11,6 +11,7 @@ import javax.annotation.PreDestroy;
 import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEviction;
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.queues.DataOnRedis;
+import org.anand.assignment.spamdetector.utils.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +52,8 @@ public class MessageService {
      */
     @PostConstruct
     public void init() throws Exception {
-        int nThreads = Runtime.getRuntime().availableProcessors() - 1;
-        executorService = Executors.newFixedThreadPool(nThreads);
-        for (int i = 0; i < nThreads; i++) {
+        executorService = Executors.newFixedThreadPool(SystemProperties.NUMBER_OF_WORKERS);
+        for (int i = 0; i < SystemProperties.NUMBER_OF_WORKERS; i++) {
             executorService.execute(new Worker(rabbitMQWorkQueue, messageCountMapWithTimeBasedEviction));
         }
     }

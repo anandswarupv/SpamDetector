@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.anand.assignment.spamdetector.utils.SystemProperties;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,7 +53,7 @@ public class DataOnRedis {
     public void addToFlaggedQueue(String sourceProfileId, Integer count) throws InterruptedException {
         Integer oldValue = flaggedProfiles.put(sourceProfileId, count);
         if (oldValue != null) {
-            if (oldValue >= 2) {
+            if (oldValue >= SystemProperties.NUMBER_OF_FLAGGINGS_ALLOWED_BEFORE_BLOCKING) {
                 blockedProfiles.put(sourceProfileId, count);
                 flaggedProfiles.remove(sourceProfileId);
             } else {
