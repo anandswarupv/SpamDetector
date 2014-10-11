@@ -56,15 +56,23 @@ public class MessageCountMapWithTimeBasedEviction {
      */
     public void put(String key, Integer value) throws InterruptedException {
         Integer oldValue = messageCountMap.put(key, value);
-        if (oldValue != null) {
-            if (oldValue >= SystemProperties.MAX_MESSAGES_ALLOWED_IN_TIMEOUT_WINDOW) {
-                messageCountMap.put(key, value);
+        if (entryAlreadyExisted(oldValue)) {
+            if (userCrossedTheThreshold(oldValue)) {
                 dataOnRedis.addToFlaggedQueue(key, value);
+                messageCountMap.put(key, value);
             } else {
                 oldValue++;
                 messageCountMap.put(key, oldValue);
             }
         }
+    }
+
+    private boolean entryAlreadyExisted(Integer oldValue) {
+        return oldValue != null;
+    }
+
+    private boolean userCrossedTheThreshold(Integer oldValue) {
+        return oldValue >= SystemProperties.MAX_MESSAGES_ALLOWED_IN_TIMEOUT_WINDOW;
     }
 
     /**

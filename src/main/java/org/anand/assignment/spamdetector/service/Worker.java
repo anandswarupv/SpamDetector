@@ -20,7 +20,7 @@ public class Worker implements Runnable {
     private final LinkedBlockingQueue<Message> queue;
 
     /**
-     * Contructs the worker using the specified {@link LinkedBlockingQueue} and
+     * Constructs the worker using the specified {@link LinkedBlockingQueue} and
      * {@link MessageCountMapWithTimeBasedEviction}
      * 
      * @param queue
