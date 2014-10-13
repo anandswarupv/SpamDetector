@@ -12,7 +12,7 @@ import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEvict
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.queues.DataOnRedis;
 import org.anand.assignment.spamdetector.service.MessageService;
-import org.anand.assignment.spamdetector.utils.SystemProperties;
+import org.anand.assignment.spamdetector.utils.SystemPropertiesForTests;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +58,7 @@ public class MessageControllerTest {
 
     @Test
     public void shouldGetAMessage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(SystemProperties.DUMMY_MESSAGE)
+        mockMvc.perform(MockMvcRequestBuilders.get(SystemPropertiesForTests.DUMMY_MESSAGE)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
     }
@@ -66,7 +66,7 @@ public class MessageControllerTest {
     @Test
     public void shouldPOSTAMessage() throws Exception {
         Mockito.when(messageService.addMessageToSpamDetectionQueue(Mockito.any(Message.class))).thenReturn(true);
-        mockMvc.perform(MockMvcRequestBuilders.post(SystemProperties.MESSAGE)
+        mockMvc.perform(MockMvcRequestBuilders.post(SystemPropertiesForTests.MESSAGE)
                         .contentType(APPLICATION_JSON_UTF8)
                 .content(SAMPLE_MESSAGE))
                 .andExpect(status().isOk())
@@ -75,7 +75,7 @@ public class MessageControllerTest {
 
     @Test
     public void shouldFlagAUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(SystemProperties.FLAG_USER + 35603735)
+        mockMvc.perform(MockMvcRequestBuilders.post(SystemPropertiesForTests.FLAG_USER + 35603735)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
 
@@ -84,7 +84,7 @@ public class MessageControllerTest {
     @Test
     public void shouldFlagAUserAndAddToQueue() throws Exception {
         String sourceProfileId = "35603735";
-        mockMvc.perform(MockMvcRequestBuilders.post(SystemProperties.FLAG_USER + sourceProfileId)
+        mockMvc.perform(MockMvcRequestBuilders.post(SystemPropertiesForTests.FLAG_USER + sourceProfileId)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         Mockito.verify(messageService).flagProfile(sourceProfileId);
@@ -94,7 +94,7 @@ public class MessageControllerTest {
     public void shouldGetFlaggedProfiles() throws Exception {
         Set<String> flaggedProfiles = new HashSet<String>(Arrays.asList("1", "2", "3"));
         Mockito.when(messageService.getFlaggedProfiles()).thenReturn(flaggedProfiles);
-        mockMvc.perform(MockMvcRequestBuilders.get(SystemProperties.FLAGGED_PROFILES)
+        mockMvc.perform(MockMvcRequestBuilders.get(SystemPropertiesForTests.FLAGGED_PROFILES)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[\"3\",\"2\",\"1\"]"));
@@ -104,7 +104,7 @@ public class MessageControllerTest {
     public void shouldGetBlockedProfiles() throws Exception {
         Set<String> blockedProfiles = new HashSet<String>(Arrays.asList("1", "2", "3"));
         Mockito.when(messageService.getBlockedProfiles()).thenReturn(blockedProfiles);
-        mockMvc.perform(MockMvcRequestBuilders.get(SystemProperties.BLOCKED_PROFILES)
+        mockMvc.perform(MockMvcRequestBuilders.get(SystemPropertiesForTests.BLOCKED_PROFILES)
                 .contentType(APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[\"3\",\"2\",\"1\"]"));

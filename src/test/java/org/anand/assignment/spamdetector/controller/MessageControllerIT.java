@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.anand.assignment.spamdetector.model.Message;
 import org.anand.assignment.spamdetector.utils.MessageBuilder;
-import org.anand.assignment.spamdetector.utils.SystemProperties;
+import org.anand.assignment.spamdetector.utils.SystemPropertiesForTests;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post(SystemProperties.MESSAGE);
+                .post(SystemPropertiesForTests.MESSAGE);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post(SystemProperties.FLAG_USER + sourceProfileId);
+                .post(SystemPropertiesForTests.FLAG_USER + sourceProfileId);
     }
 
     private void postMessage(Message message) {
@@ -124,7 +124,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .post(SystemProperties.MESSAGE);
+                .post(SystemPropertiesForTests.MESSAGE);
     }
 
     @SuppressWarnings("unchecked")
@@ -135,7 +135,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get(SystemProperties.FLAGGED_PROFILES)
+                .get(SystemPropertiesForTests.FLAGGED_PROFILES)
                 .as(Set.class);
     }
 
@@ -147,7 +147,7 @@ public class MessageControllerIT {
                 .statusCode(200)
                 .log().ifError()
                 .when()
-                .get(SystemProperties.BLOCKED_PROFILES)
+                .get(SystemPropertiesForTests.BLOCKED_PROFILES)
                 .as(Set.class);
     }
 

@@ -1,7 +1,7 @@
 package org.anand.assignment.spamdetector.cache;
 
-import org.anand.assignment.spamdetector.cache.MessageCountMapWithTimeBasedEviction;
 import org.anand.assignment.spamdetector.queues.DataOnRedis;
+import org.anand.assignment.spamdetector.utils.SystemPropertiesForTests;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public class MessageCountMapWithTimeBasedEvictionTest {
     }
 
     private void waitForKeyTimeout() throws InterruptedException {
-        Thread.sleep(10000);
+        Thread.sleep((SystemPropertiesForTests.DEFAULT_TIMEOUT_IN_SECONDS) * 1000);
     }
 
 }
