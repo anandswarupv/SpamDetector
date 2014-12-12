@@ -11,7 +11,6 @@ Pre Requisites
 
 Steps to Run the application
 ------------------------------
-
 - Ensure Port 8080 is free before starting the build
 - Build Project using : mvn clean install
 - WAR file will be created in the target folder : spamdetector-1.0-SNAPSHOT.war
